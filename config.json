@@ -1,0 +1,53 @@
+{
+    "master": "<master's username>",
+    "irc": {
+        "host": "<irc host>",
+        "port": 6697,
+        "username": "<bot's username>",
+        "password": "<bot's password>",
+        "channel": "#mychannel"
+    },
+    "character_blacklist": "|&;#$^`",
+    "commands": {
+        "hello": {
+            "method": "sayHello",
+            "help": "says hello"
+        },
+        "dig": {
+            "method": "domainLookup",
+            "help": "performs a DNS lookup and prints the results"
+        },
+        "df": {
+            "method": "diskStatus",
+            "help": "prints information about attached disks and their usage"
+        },
+        "uptime": {
+            "method": "getUptime",
+            "help": "prints system uptime"
+        },
+        "hostname": {
+            "method": "getHostname",
+            "help": "prints the system hostname"
+        },
+        "reboot": {
+            "method": "doReboot",
+            "help": "schedules a reboot in 2 minutes"
+        },
+        "undoreboot": {
+            "method": "undoReboot",
+            "help": "cancels the scheduled reboot"
+        },
+        "help": {
+            "method": "getHelp",
+            "help": "returns information about a command. Use `list` for a list of available commands."
+        },
+        "list": {
+            "method": "listCommands",
+            "help": "prints a list of available commands"
+        },
+        "kill_client": {
+            "method": "killClient",
+            "help": "stops the IRC client"
+        }
+    }
+}
