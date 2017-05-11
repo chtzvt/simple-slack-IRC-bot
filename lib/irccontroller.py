@@ -131,7 +131,7 @@ class SlackIRCController(object):
           # Attempt to evaluate input, and catch any errors
           # If there's an error, we'll notify the channel instead of crashing.
           try:
-              output = self.commandParser.parse(message)
+              output = self.commandParser.parse(message) if self.sendReady is True else None
               if output is not None:
                   self.tellMaster(output)
           except Exception,e:

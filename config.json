@@ -1,5 +1,6 @@
 {
     "master": "<master's username>",
+    "authorized_users":["other", "users"],
     "irc": {
         "host": "<irc host>",
         "port": 6697,

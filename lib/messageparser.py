@@ -59,12 +59,13 @@ class MessageParser(object):
         The parse method, which is called by the message read/eval loop
         in the SlackIRCController class.
     """
-    def parse(self, message):
+    def parse(self, item):
         # Strip metadata from the message
-        message = self.stripMeta(message)
+        message = self.stripMeta(item)
+        meta = self.getMeta(item)
 
         # If we find our nickame in the message (e.g. we're being summoned)
-        if self.checkForNick(message):
+        if self.checkForNick(message) and self.checkAuthorization(meta):
             # Strip our nickname from the message
             message = self.stripNick(message)
             # Strip any illegal characters from the message
@@ -80,6 +81,8 @@ class MessageParser(object):
                 # Call the appropriate method in the CommandMap class, and return
                 # the response text it generates.
                 return getattr(self.command_map, method)(args)
+            else:
+		return 'Couldn\'t find a command: `'+ message +'`'
 
     """
         Checks for either @nickname or nickname in the current message text.
@@ -87,6 +90,15 @@ class MessageParser(object):
     def checkForNick(self, message):
         message = message.split(' ')
         return '@'+self.nickname in message or self.nickname in message
+
+    """
+        Checks message sender against authorized users
+    """
+    def checkAuthorization(self, meta):
+        meta = self.getMeta(meta)
+	authorized_users = self.config['authorized_users']
+	authorized_users.append(self.config['master'])
+        return meta[meta.find('!')+1:meta.find('@')] in authorized_users
 
     """
         Strips the metadata from the latest message.
@@ -99,6 +111,18 @@ class MessageParser(object):
     def stripMeta(self, message):
         message = message[message.find(':')+1:] # Strip first colon
         return message[message.find(':')+1:] # Return everything from second colon onwards (message content)
+
+    """
+        Returns the metadata from the latest message.
+
+        Converts this:
+            :nickname!nickname@<server> PRIVMSG <channel> : <message>
+        to this:
+	        nickname!nickname@<server> PRIVMSG <channel>
+    """
+    def getMeta(self, message):
+        message = message[message.find(':')+1:] # Strip first colon
+        return message[:message.find(':')] # Return everything between first and second colons
 
     """
         Removes any blacklisted characters from the message.
@@ -121,7 +145,7 @@ class MessageParser(object):
         Strips the command name from the message, which leaves us with the arguments to pass.
     """
     def stripCommand(self, command, message):
-        message = message[message.find(command)+len(command):] # Strip first occurrence of command name
+        message = message[message.find(command)+len(command)+1:] # Strip first occurrence of command name
         return message
 
     """
